@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block title %}My Skills – SkillSync{% endblock %}
+{% block page_title %}My Skills{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+  <!-- Add Skill Form -->
+  <div class="col-md-4">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-white border-bottom">
+        <h6 class="mb-0 fw-semibold"><i class="bi bi-plus-circle me-2 text-primary"></i>Add a Skill</h6>
+      </div>
+      <div class="card-body">
+        <form method="post" action="{% url 'accounts:skill_add' %}">
+          {% csrf_token %}
+          {% for field in form %}
+            <div class="mb-3">
+              <label class="form-label fw-semibold small">{{ field.label }}</label>
+              {{ field }}
+              {% if field.errors %}
+                <div class="text-danger small">{{ field.errors.0 }}</div>
+              {% endif %}
+            </div>
+          {% endfor %}
+          <button type="submit" class="btn btn-primary w-100">
+            <i class="bi bi-plus me-1"></i> Add Skill
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Proficiency Legend -->
+    <div class="card border-0 shadow-sm mt-3">
+      <div class="card-body">
+        <h6 class="fw-semibold small mb-3">Proficiency Scoring</h6>
+        <div class="d-flex flex-column gap-2">
+          <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-secondary" style="width:90px">Beginner</span>
+            <span class="text-muted small">= 1 point</span>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-primary" style="width:90px">Intermediate</span>
+            <span class="text-muted small">= 2 points</span>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-success" style="width:90px">Advanced</span>
+            <span class="text-muted small">= 3 points</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Skill List -->
+  <div class="col-md-8">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
+        <h6 class="mb-0 fw-semibold">
+          <i class="bi bi-tools me-2 text-primary"></i>Your Skills
+          <span class="badge bg-primary ms-2">{{ user_skills.count }}</span>
+        </h6>
+      </div>
+      <div class="card-body p-0">
+        {% if user_skills %}
+          <div class="list-group list-group-flush">
+            {% for us in user_skills %}
+            <div class="list-group-item d-flex align-items-center gap-3 py-3">
+              <div class="flex-grow-1">
+                <div class="fw-semibold">{{ us.skill.name }}</div>
+                {% if us.skill.category %}
+                  <div class="text-muted small">{{ us.skill.category }}</div>
+                {% endif %}
+              </div>
+
+              <!-- Inline proficiency update -->
+              <form method="post" action="{% url 'accounts:skill_update' us.pk %}" class="d-flex align-items-center gap-2">
+                {% csrf_token %}
+                <select name="proficiency" class="form-select form-select-sm" style="width:130px" onchange="this.form.submit()">
+                  <option value="beginner" {% if us.proficiency == 'beginner' %}selected{% endif %}>Beginner</option>
+                  <option value="intermediate" {% if us.proficiency == 'intermediate' %}selected{% endif %}>Intermediate</option>
+                  <option value="advanced" {% if us.proficiency == 'advanced' %}selected{% endif %}>Advanced</option>
+                </select>
+              </form>
+
+              {% if us.proficiency == 'advanced' %}
+                <span class="badge bg-success">★★★</span>
+              {% elif us.proficiency == 'intermediate' %}
+                <span class="badge bg-primary">★★☆</span>
+              {% else %}
+                <span class="badge bg-secondary">★☆☆</span>
+              {% endif %}
+
+              <form method="post" action="{% url 'accounts:skill_delete' us.pk %}"
+                    onsubmit="return confirm('Remove {{ us.skill.name }}?')">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-sm btn-outline-danger">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </form>
+            </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="p-5 text-center text-muted">
+            <i class="bi bi-tools fs-2 d-block mb-2"></i>
+            No skills added yet. Use the form to add your first skill!
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

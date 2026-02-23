@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block title %}{{ action }} Opportunity – SkillSync{% endblock %}
+{% block page_title %}{{ action }} Opportunity{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-white border-bottom">
+        <h6 class="mb-0 fw-semibold">
+          <i class="bi bi-briefcase-fill me-2 text-primary"></i>{{ action }} Opportunity
+        </h6>
+      </div>
+      <div class="card-body">
+        <form method="post" novalidate>
+          {% csrf_token %}
+
+          <!-- Main fields -->
+          <div class="row g-3 mb-4">
+            <div class="col-md-8">
+              <label class="form-label fw-semibold small">Job Title *</label>
+              {{ form.title }}
+              {% if form.title.errors %}<div class="text-danger small">{{ form.title.errors.0 }}</div>{% endif %}
+            </div>
+            <div class="col-md-4">
+              <label class="form-label fw-semibold small">Type *</label>
+              {{ form.type }}
+              {% if form.type.errors %}<div class="text-danger small">{{ form.type.errors.0 }}</div>{% endif %}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold small">Company *</label>
+              {{ form.company }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold small">Location</label>
+              {{ form.location }}
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold small">Description *</label>
+              {{ form.description }}
+            </div>
+            <div class="col-md-4">
+              <label class="form-label fw-semibold small">Status</label>
+              {{ form.status }}
+            </div>
+            <div class="col-md-4">
+              <label class="form-label fw-semibold small">Salary Range</label>
+              {{ form.salary_range }}
+            </div>
+            <div class="col-md-4">
+              <label class="form-label fw-semibold small">Application Deadline</label>
+              {{ form.deadline }}
+            </div>
+          </div>
+
+          <hr>
+
+          <!-- Required Skills Formset -->
+          <h6 class="fw-semibold mb-3"><i class="bi bi-tools me-2 text-primary"></i>Required Skills</h6>
+          {{ formset.management_form }}
+          <div id="formset-container">
+            {% for skill_form in formset %}
+              <div class="row g-2 align-items-end mb-2 formset-row">
+                <div class="col-md-5">
+                  {% if forloop.first %}<label class="form-label fw-semibold small">Skill</label>{% endif %}
+                  {{ skill_form.skill }}
+                  {{ skill_form.id }}
+                </div>
+                <div class="col-md-4">
+                  {% if forloop.first %}<label class="form-label fw-semibold small">Required Level</label>{% endif %}
+                  {{ skill_form.required_proficiency }}
+                </div>
+                <div class="col-md-3">
+                  {% if forloop.first %}<label class="form-label fw-semibold small">Remove</label>{% endif %}
+                  <div class="form-check mt-2">
+                    {{ skill_form.DELETE }}
+                    <label class="form-check-label text-danger small">Delete</label>
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+
+          <div class="d-flex gap-3 mt-4">
+            <button type="submit" class="btn btn-primary px-4 fw-semibold">
+              <i class="bi bi-check2 me-1"></i>{{ action }} Opportunity
+            </button>
+            <a href="{% url 'dashboard:home' %}" class="btn btn-outline-secondary px-4">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  input[type="text"], input[type="url"], input[type="date"], select, textarea {
+    border-radius: 8px; border: 1.5px solid #e2e8f0; padding: 0.55rem 0.9rem; width: 100%;
+  }
+  input:focus, select:focus, textarea:focus {
+    border-color: #4f46e5; box-shadow: 0 0 0 3px rgba(79,70,229,0.1); outline: none;
+  }
+</style>
+{% endblock %}

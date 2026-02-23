@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Login – SkillSync{% endblock %}
+
+{% block auth_content %}
+<div class="min-vh-100 d-flex align-items-center justify-content-center bg-light">
+  <div class="auth-card card p-5">
+    <div class="text-center mb-4">
+      <div class="auth-brand"><i class="bi bi-lightning-charge-fill"></i> SkillSync</div>
+      <p class="text-muted mt-1">Sign in to your account</p>
+    </div>
+
+    {% if messages %}
+      {% for msg in messages %}
+        <div class="alert alert-{{ msg.tags|default:'info' }}">{{ msg }}</div>
+      {% endfor %}
+    {% endif %}
+
+    <form method="post" novalidate>
+      {% csrf_token %}
+      {% for field in form %}
+        <div class="mb-3">
+          <label class="form-label fw-semibold">{{ field.label }}</label>
+          {{ field }}
+          {% if field.errors %}
+            <div class="text-danger small mt-1">{{ field.errors.0 }}</div>
+          {% endif %}
+        </div>
+      {% endfor %}
+
+      <button type="submit" class="btn btn-primary w-100 py-2 mt-1 fw-semibold">
+        <i class="bi bi-box-arrow-in-right me-1"></i> Sign In
+      </button>
+    </form>
+
+    <p class="text-center mt-4 mb-0 text-muted small">
+      Don't have an account? <a href="{% url 'accounts:register' %}" class="text-primary fw-semibold">Register</a>
+    </p>
+  </div>
+</div>
+
+<style>
+  input[type="email"], input[type="password"] {
+    border-radius: 8px; border: 1.5px solid #e2e8f0; padding: 0.6rem 1rem; width: 100%;
+  }
+  input:focus { border-color: #4f46e5; outline: none; box-shadow: 0 0 0 3px rgba(79,70,229,0.1); }
+</style>
+{% endblock %}

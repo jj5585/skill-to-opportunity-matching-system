@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}Candidates – {{ opportunity.title }} – SkillSync{% endblock %}
+{% block page_title %}Matched Candidates{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+  <h5 class="fw-bold">{{ opportunity.title }}</h5>
+  <p class="text-muted">{{ opportunity.company }}{% if opportunity.location %} · {{ opportunity.location }}{% endif %}</p>
+</div>
+
+{% if candidates %}
+  <div class="card border-0 shadow-sm">
+    <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
+      <h6 class="mb-0 fw-semibold">
+        <i class="bi bi-people me-2 text-primary"></i>Ranked Candidates
+        <span class="badge bg-primary ms-2">{{ candidates|length }}</span>
+      </h6>
+    </div>
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Rank</th>
+              <th>Candidate</th>
+              <th>Match %</th>
+              <th>Progress</th>
+              <th>Skills Matched</th>
+              <th>Missing</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for c in candidates %}
+            <tr>
+              <td class="fw-bold text-muted">#{{ forloop.counter }}</td>
+              <td>
+                <div class="fw-semibold">User #{{ c.user_id }}</div>
+                <div class="text-muted small">{{ c.matched_skills_count }}/{{ c.total_required_skills }} skills</div>
+              </td>
+              <td>
+                <span class="match-badge
+                  {% if c.match_percentage >= 70 %}match-high
+                  {% elif c.match_percentage >= 40 %}match-mid
+                  {% else %}match-low{% endif %}">
+                  {{ c.match_percentage }}%
+                </span>
+              </td>
+              <td style="min-width: 120px">
+                <div class="progress">
+                  <div class="progress-bar
+                    {% if c.match_percentage >= 70 %}bg-success
+                    {% elif c.match_percentage >= 40 %}bg-warning
+                    {% else %}bg-danger{% endif %}"
+                    style="width:{{ c.match_percentage }}%">
+                  </div>
+                </div>
+              </td>
+              <td>{{ c.matched_skills_count }} / {{ c.total_required_skills }}</td>
+              <td>
+                {% for skill in c.missing_skills|slice:":3" %}
+                  <span class="badge bg-danger-subtle text-danger me-1">{{ skill }}</span>
+                {% endfor %}
+                {% if c.missing_skills|length > 3 %}
+                  <span class="text-muted small">+{{ c.missing_skills|length|add:"-3" }} more</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+{% else %}
+  <div class="card border-0 shadow-sm p-5 text-center text-muted">
+    <i class="bi bi-people fs-2 d-block mb-2"></i>
+    No registered job seekers found.
+  </div>
+{% endif %}
+
+<div class="mt-3">
+  <a href="{% url 'opportunities:detail' opportunity.pk %}" class="btn btn-outline-secondary">
+    <i class="bi bi-arrow-left me-1"></i>Back to Opportunity
+  </a>
+</div>
+{% endblock %}

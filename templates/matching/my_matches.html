@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block title %}My Matches – SkillSync{% endblock %}
+{% block page_title %}My Matched Opportunities{% endblock %}
+
+{% block content %}
+<!-- Filter -->
+<div class="card border-0 shadow-sm mb-4">
+  <div class="card-body">
+    <form method="get" class="row g-2 align-items-end">
+      <div class="col-auto">
+        <label class="form-label small fw-semibold">Minimum Match %</label>
+        <select name="min" class="form-select" onchange="this.form.submit()">
+          <option value="0"  {% if min_pct == 0 %}selected{% endif %}>All</option>
+          <option value="30" {% if min_pct == 30 %}selected{% endif %}>30%+</option>
+          <option value="50" {% if min_pct == 50 %}selected{% endif %}>50%+</option>
+          <option value="70" {% if min_pct == 70 %}selected{% endif %}>70%+</option>
+          <option value="90" {% if min_pct == 90 %}selected{% endif %}>90%+</option>
+        </select>
+      </div>
+      <div class="col-auto">
+        <span class="text-muted small">Showing <strong>{{ total }}</strong> results</span>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% if matches %}
+  <div class="row g-3">
+    {% for match in matches %}
+    <div class="col-md-6">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start mb-2">
+            <!-- Opportunity link via ID -->
+            <h6 class="fw-bold mb-0">
+              <a href="{% url 'opportunities:detail' match.opportunity_id %}" class="text-decoration-none text-dark">
+                Opportunity #{{ match.opportunity_id }}
+              </a>
+            </h6>
+            <span class="match-badge
+              {% if match.match_percentage >= 70 %}match-high
+              {% elif match.match_percentage >= 40 %}match-mid
+              {% else %}match-low{% endif %}">
+              {{ match.match_percentage }}%
+            </span>
+          </div>
+
+          <div class="progress mb-3">
+            <div class="progress-bar
+              {% if match.match_percentage >= 70 %}bg-success
+              {% elif match.match_percentage >= 40 %}bg-warning
+              {% else %}bg-danger{% endif %}"
+              style="width:{{ match.match_percentage }}%">
+            </div>
+          </div>
+
+          <div class="row text-center mb-3">
+            <div class="col-4">
+              <div class="fw-bold">{{ match.matched_skills_count }}</div>
+              <div class="text-muted tiny">Matched</div>
+            </div>
+            <div class="col-4">
+              <div class="fw-bold">{{ match.missing_skills|length }}</div>
+              <div class="text-muted tiny">Missing</div>
+            </div>
+            <div class="col-4">
+              <div class="fw-bold">{{ match.total_required_skills }}</div>
+              <div class="text-muted tiny">Required</div>
+            </div>
+          </div>
+
+          {% if match.missing_skills %}
+          <div class="mb-2">
+            <span class="text-muted small fw-semibold">Missing: </span>
+            {% for skill in match.missing_skills|slice:":3" %}
+              <span class="badge bg-danger-subtle text-danger me-1">{{ skill }}</span>
+            {% endfor %}
+          </div>
+          {% endif %}
+
+          <a href="{% url 'matching:match_detail' match.opportunity_id %}" class="btn btn-sm btn-outline-primary w-100">
+            View Full Breakdown →
+          </a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="text-center py-5 text-muted">
+    <i class="bi bi-stars fs-2 d-block mb-2"></i>
+    No matches found.
+    {% if min_pct > 0 %}Try lowering the minimum match percentage.{% else %}
+    <a href="{% url 'accounts:skills' %}">Add skills</a> to find opportunities.
+    {% endif %}
+  </div>
+{% endif %}
+
+<style>.tiny { font-size: 0.7rem; }</style>
+{% endblock %}

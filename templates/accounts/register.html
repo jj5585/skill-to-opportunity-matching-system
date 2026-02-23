@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Register – SkillSync{% endblock %}
+
+{% block auth_content %}
+<div class="min-vh-100 d-flex align-items-center justify-content-center bg-light py-5">
+  <div class="auth-card card p-5" style="max-width:520px">
+    <div class="text-center mb-4">
+      <div class="auth-brand"><i class="bi bi-lightning-charge-fill"></i> SkillSync</div>
+      <p class="text-muted mt-1">Create your account</p>
+    </div>
+
+    <form method="post" novalidate>
+      {% csrf_token %}
+      <div class="row g-3">
+        {% for field in form %}
+          <div class="{% if field.name == 'bio' %}col-12{% elif field.name in 'first_name,last_name,email,username,role' %}col-md-6{% else %}col-12{% endif %}">
+            <label class="form-label fw-semibold small">{{ field.label }}</label>
+            {{ field }}
+            {% if field.errors %}
+              <div class="text-danger small mt-1">{{ field.errors.0 }}</div>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+
+      <button type="submit" class="btn btn-primary w-100 py-2 mt-4 fw-semibold">
+        <i class="bi bi-person-plus me-1"></i> Create Account
+      </button>
+    </form>
+
+    <p class="text-center mt-4 mb-0 text-muted small">
+      Already have an account? <a href="{% url 'accounts:login' %}" class="text-primary fw-semibold">Sign In</a>
+    </p>
+  </div>
+</div>
+
+<style>
+  input, select { border-radius: 8px !important; border: 1.5px solid #e2e8f0 !important; padding: 0.55rem 0.9rem !important; width: 100%; }
+  input:focus, select:focus { border-color: #4f46e5 !important; box-shadow: 0 0 0 3px rgba(79,70,229,0.1) !important; }
+</style>
+{% endblock %}
