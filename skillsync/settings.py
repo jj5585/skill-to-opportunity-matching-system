@@ -65,7 +65,7 @@ WSGI_APPLICATION = 'skillsync.wsgi.application'
 # ── Database – MySQL ───────────────────────────────────────────────────────────
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
+        'ENGINE': 'django.db.backends.postgresql',
         'NAME': config('DB_NAME', default='skillsync_db'),
         'USER': config('DB_USER', default='root'),
         'PASSWORD': config('DB_PASSWORD', default=''),
